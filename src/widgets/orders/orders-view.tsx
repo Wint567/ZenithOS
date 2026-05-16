@@ -1,0 +1,124 @@
+"use client";
+
+import { useCallback, useMemo, useState } from "react";
+import { CreditCard, Search } from "lucide-react";
+import { fetchOrders } from "@/mock/api";
+import { formatCurrency } from "@/lib/utils";
+import type { Order } from "@/types";
+import { Badge } from "@/shared/ui/badge";
+import { Button } from "@/shared/ui/button";
+import { Card } from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { Modal } from "@/shared/ui/modal";
+import { Select } from "@/shared/ui/select";
+import { DataTable, type Column } from "@/shared/ui/table";
+import { CardSkeleton } from "@/shared/ui/skeleton";
+import { useFakeQuery } from "@/hooks/use-fake-query";
+
+const statusTone: Record<Order["status"], "success" | "warning" | "danger" | "neutral"> = {
+  paid: "success",
+  pending: "warning",
+  failed: "danger",
+  refunded: "neutral",
+};
+
+export function OrdersView() {
+  const query = useCallback(() => fetchOrders(), []);
+  const { data, loading } = useFakeQuery(query);
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("all");
+  const [sortKey, setSortKey] = useState("date");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [page, setPage] = useState(1);
+  const [selected, setSelected] = useState<Order | null>(null);
+
+  const filtered = useMemo(() => {
+    const rows = [...(data ?? [])].filter((order) => {
+      const matchesSearch = `${order.id} ${order.customer} ${order.product}`.toLowerCase().includes(search.toLowerCase());
+      const matchesStatus = status === "all" || order.status === status;
+      return matchesSearch && matchesStatus;
+    });
+    rows.sort((a, b) => {
+      const left = a[sortKey as keyof Order];
+      const right = b[sortKey as keyof Order];
+      return String(left).localeCompare(String(right), undefined, { numeric: true }) * (sortDir === "asc" ? 1 : -1);
+    });
+    return rows;
+  }, [data, search, status, sortDir, sortKey]);
+
+  const pageSize = 8;
+  const pageRows = filtered.slice((page - 1) * pageSize, page * pageSize);
+  const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
+
+  const columns: Column<Order>[] = [
+    { key: "id", header: "Order", sortable: true, render: (row) => <span className="font-medium text-foreground">{row.id}</span> },
+    { key: "customer", header: "Customer", sortable: true, render: (row) => <div><p className="font-medium text-foreground">{row.customer}</p><p className="text-xs text-foreground/40">{row.email}</p></div> },
+    { key: "product", header: "Product", sortable: true },
+    { key: "status", header: "Status", render: (row) => <Badge tone={statusTone[row.status]}>{row.status}</Badge> },
+    { key: "total", header: "Total", sortable: true, render: (row) => formatCurrency(row.total) },
+    { key: "date", header: "Date", sortable: true },
+  ];
+
+  function onSort(key: string) {
+    if (sortKey === key) setSortDir((dir) => (dir === "asc" ? "desc" : "asc"));
+    else {
+      setSortKey(key);
+      setSortDir("asc");
+    }
+  }
+
+  if (loading) return <div className="grid gap-5"><CardSkeleton /><CardSkeleton /><CardSkeleton /></div>;
+
+  return (
+    <div className="grid gap-5 pb-20 lg:pb-0">
+      <section>
+        <Badge tone="brand">Commerce ops</Badge>
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">Orders</h1>
+        <p className="mt-2 text-sm text-foreground/55">Search, filter, sort, and inspect customer orders with a reusable table system.</p>
+      </section>
+      <Card>
+        <div className="mb-5 grid gap-3 md:grid-cols-[1fr_180px_auto]">
+          <Input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Search orders..." icon={<Search className="size-4" />} />
+          <Select value={status} onChange={(event) => { setStatus(event.target.value); setPage(1); }}>
+            <option value="all">All status</option>
+            <option value="paid">Paid</option>
+            <option value="pending">Pending</option>
+            <option value="failed">Failed</option>
+            <option value="refunded">Refunded</option>
+          </Select>
+          <Button variant="secondary"><CreditCard className="size-4" /> Export</Button>
+        </div>
+        {pageRows.length ? (
+          <DataTable data={pageRows as unknown as Record<string, unknown>[]} columns={columns as unknown as Column<Record<string, unknown>>[]} sortKey={sortKey} sortDir={sortDir} onSort={onSort} onRowClick={(row) => setSelected(row as unknown as Order)} />
+        ) : (
+          <div className="rounded-xl border border-dashed border-white/15 p-12 text-center text-sm text-foreground/45">No orders match the current filters.</div>
+        )}
+        <div className="mt-5 flex items-center justify-between text-sm text-foreground/55">
+          <span>{filtered.length} results</span>
+          <div className="flex items-center gap-2">
+            <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage((value) => value - 1)}>Previous</Button>
+            <span>Page {page} of {pages}</span>
+            <Button variant="secondary" size="sm" disabled={page === pages} onClick={() => setPage((value) => value + 1)}>Next</Button>
+          </div>
+        </div>
+      </Card>
+      <Modal open={Boolean(selected)} title="Order details" onClose={() => setSelected(null)}>
+        {selected ? (
+          <div className="grid gap-4">
+            <div className="rounded-xl border border-white/10 bg-white/[0.05] p-4">
+              <p className="text-sm text-foreground/45">{selected.id}</p>
+              <h3 className="mt-1 text-xl font-semibold">{selected.product}</h3>
+            </div>
+            {[
+              ["Customer", selected.customer],
+              ["Email", selected.email],
+              ["Channel", selected.channel],
+              ["Total", formatCurrency(selected.total)],
+              ["Date", selected.date],
+            ].map(([label, value]) => <div key={label} className="flex justify-between border-b border-white/10 pb-3 text-sm"><span className="text-foreground/45">{label}</span><span>{value}</span></div>)}
+          </div>
+        ) : null}
+      </Modal>
+    </div>
+  );
+}

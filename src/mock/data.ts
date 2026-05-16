@@ -1,0 +1,196 @@
+import type { MetricPoint, Notification, Order, Product, User } from "@/types";
+
+export const metrics: MetricPoint[] = [
+  { name: "Jan", revenue: 42000, customers: 2100, conversion: 4.1, orders: 840 },
+  { name: "Feb", revenue: 47000, customers: 2460, conversion: 4.5, orders: 910 },
+  { name: "Mar", revenue: 52000, customers: 2880, conversion: 4.8, orders: 1040 },
+  { name: "Apr", revenue: 61000, customers: 3210, conversion: 5.2, orders: 1180 },
+  { name: "May", revenue: 76000, customers: 3820, conversion: 5.9, orders: 1410 },
+  { name: "Jun", revenue: 84000, customers: 4490, conversion: 6.4, orders: 1580 },
+  { name: "Jul", revenue: 93000, customers: 5010, conversion: 6.8, orders: 1760 },
+  { name: "Aug", revenue: 110000, customers: 5740, conversion: 7.1, orders: 1990 },
+  { name: "Sep", revenue: 125000, customers: 6480, conversion: 7.6, orders: 2250 },
+  { name: "Oct", revenue: 138000, customers: 7190, conversion: 8.2, orders: 2490 },
+  { name: "Nov", revenue: 151000, customers: 7920, conversion: 8.5, orders: 2680 },
+  { name: "Dec", revenue: 168000, customers: 8610, conversion: 8.9, orders: 2940 },
+];
+
+export const orders: Order[] = Array.from({ length: 36 }, (_, index) => {
+  const statuses: Order["status"][] = ["paid", "pending", "failed", "refunded"];
+  const channels: Order["channel"][] = ["Website", "Marketplace", "Partner", "API"];
+  const products = ["Zenith Core", "Pulse AI", "Orbit Teams", "Nova Insights", "Atlas Billing"];
+  const names = ["Mara Chen", "Theo Brooks", "Ava Patel", "Nico Reyes", "Iris Stone", "Daria Volkov"];
+  const name = names[index % names.length];
+  return {
+    id: `ZN-${8490 + index}`,
+    customer: name,
+    email: `${name.toLowerCase().replace(" ", ".")}@example.com`,
+    product: products[index % products.length],
+    status: statuses[index % statuses.length],
+    total: 240 + index * 57,
+    date: `2026-05-${String((index % 27) + 1).padStart(2, "0")}`,
+    channel: channels[index % channels.length],
+  };
+});
+
+export const users: User[] = [
+  {
+    id: "usr_01",
+    name: "Mara Chen",
+    email: "mara@zenithos.io",
+    role: "Owner",
+    status: "active",
+    avatar: "MC",
+    location: "San Francisco",
+    lastSeen: "2 min ago",
+    activity: ["Approved enterprise invoice", "Invited 3 teammates", "Updated workspace limits"],
+  },
+  {
+    id: "usr_02",
+    name: "Theo Brooks",
+    email: "theo@zenithos.io",
+    role: "Engineer",
+    status: "active",
+    avatar: "TB",
+    location: "London",
+    lastSeen: "14 min ago",
+    activity: ["Resolved API latency alert", "Published changelog", "Reviewed audit logs"],
+  },
+  {
+    id: "usr_03",
+    name: "Ava Patel",
+    email: "ava@zenithos.io",
+    role: "Designer",
+    status: "pending",
+    avatar: "AP",
+    location: "Toronto",
+    lastSeen: "1 hour ago",
+    activity: ["Created onboarding flow", "Commented on dashboard polish", "Uploaded brand assets"],
+  },
+  {
+    id: "usr_04",
+    name: "Nico Reyes",
+    email: "nico@zenithos.io",
+    role: "Analyst",
+    status: "inactive",
+    avatar: "NR",
+    location: "Berlin",
+    lastSeen: "Yesterday",
+    activity: ["Exported revenue report", "Saved cohort segment", "Shared forecast snapshot"],
+  },
+  {
+    id: "usr_05",
+    name: "Iris Stone",
+    email: "iris@zenithos.io",
+    role: "Admin",
+    status: "blocked",
+    avatar: "IS",
+    location: "New York",
+    lastSeen: "3 days ago",
+    activity: ["Failed SSO challenge", "Requested security review", "Changed notification rules"],
+  },
+];
+
+export const products: Product[] = [
+  {
+    id: "prd_01",
+    name: "Zenith Core",
+    category: "Platform",
+    price: 149,
+    stock: 128,
+    sold: 4200,
+    rating: 4.9,
+    image: "linear-gradient(135deg, #7c5cff, #10d7c4)",
+    status: "In stock",
+  },
+  {
+    id: "prd_02",
+    name: "Pulse AI",
+    category: "Automation",
+    price: 249,
+    stock: 42,
+    sold: 3100,
+    rating: 4.8,
+    image: "linear-gradient(135deg, #111827, #7c5cff)",
+    status: "Low stock",
+  },
+  {
+    id: "prd_03",
+    name: "Orbit Teams",
+    category: "Collaboration",
+    price: 99,
+    stock: 210,
+    sold: 7600,
+    rating: 4.7,
+    image: "linear-gradient(135deg, #10d7c4, #2563eb)",
+    status: "In stock",
+  },
+  {
+    id: "prd_04",
+    name: "Nova Insights",
+    category: "Analytics",
+    price: 399,
+    stock: 0,
+    sold: 1900,
+    rating: 4.9,
+    image: "linear-gradient(135deg, #f43f5e, #7c5cff)",
+    status: "Backorder",
+  },
+  {
+    id: "prd_05",
+    name: "Atlas Billing",
+    category: "Finance",
+    price: 179,
+    stock: 86,
+    sold: 2800,
+    rating: 4.6,
+    image: "linear-gradient(135deg, #f59e0b, #10d7c4)",
+    status: "In stock",
+  },
+  {
+    id: "prd_06",
+    name: "Signal SSO",
+    category: "Security",
+    price: 299,
+    stock: 23,
+    sold: 2300,
+    rating: 4.8,
+    image: "linear-gradient(135deg, #0f172a, #22c55e)",
+    status: "Low stock",
+  },
+];
+
+export const notifications: Notification[] = [
+  {
+    id: "not_01",
+    title: "Revenue milestone",
+    message: "MRR crossed $168K with 12.4% month-over-month growth.",
+    time: "Now",
+    unread: true,
+    tone: "success",
+  },
+  {
+    id: "not_02",
+    title: "Inventory watch",
+    message: "Pulse AI has 42 seats left before the next procurement sync.",
+    time: "7 min",
+    unread: true,
+    tone: "warning",
+  },
+  {
+    id: "not_03",
+    title: "Security review",
+    message: "One admin account requires SSO verification.",
+    time: "21 min",
+    unread: false,
+    tone: "danger",
+  },
+];
+
+export const activity = [
+  "Enterprise workspace upgraded to Scale plan",
+  "A new cohort report finished processing",
+  "3 invoices were paid through Stripe Connect",
+  "Nova Insights waitlist increased by 18%",
+  "Support satisfaction reached 97.2%",
+];
