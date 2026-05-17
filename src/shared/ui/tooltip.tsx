@@ -11,7 +11,7 @@ export function Tooltip({ label, children }: React.PropsWithChildren<{ label: st
       <AnimatePresence>
         {open ? (
           <motion.span
-            className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md border border-white/10 bg-black/90 px-2 py-1 text-xs text-white shadow-xl"
+            className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md border border-[var(--line)] bg-[var(--tooltip-bg)] px-2 py-1 text-xs text-[var(--tooltip-fg)] shadow-xl"
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}

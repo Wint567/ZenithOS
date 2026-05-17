@@ -4,27 +4,98 @@
   color-scheme: dark;
   --background: #05060a;
   --foreground: #f6f7fb;
-  --muted: #9ba3b4;
+  --muted: #a4adbf;
+  --muted-strong: #c7cede;
   --panel: rgba(12, 15, 24, 0.72);
   --panel-strong: rgba(18, 22, 35, 0.9);
+  --surface-0: rgba(255, 255, 255, 0.035);
+  --surface-1: rgba(255, 255, 255, 0.055);
+  --surface-2: rgba(255, 255, 255, 0.085);
+  --surface-solid: #0d111d;
+  --shell: rgba(5, 6, 10, 0.72);
+  --overlay: rgba(0, 0, 0, 0.55);
   --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.16);
   --brand: #7c5cff;
   --accent: #10d7c4;
   --success: #39d98a;
   --warning: #ffbc4b;
   --danger: #ff5c7a;
   --chart-grid: rgba(255, 255, 255, 0.07);
+  --chart-axis: rgba(255, 255, 255, 0.38);
+  --tooltip-bg: rgba(7, 9, 18, 0.94);
+  --tooltip-fg: #ffffff;
+  --focus: rgba(124, 92, 255, 0.5);
+  --shadow-card: 0 18px 64px rgba(0, 0, 0, 0.2);
+  --shadow-soft: 0 16px 50px rgba(0, 0, 0, 0.18);
+  --input-bg: rgba(255, 255, 255, 0.06);
+  --input-bg-focus: rgba(255, 255, 255, 0.085);
+  --button-primary-bg: #ffffff;
+  --button-primary-fg: #070912;
+  --button-primary-hover: rgba(255, 255, 255, 0.9);
+  --button-secondary-bg: rgba(255, 255, 255, 0.1);
+  --button-secondary-hover: rgba(255, 255, 255, 0.15);
+  --badge-brand-bg: rgba(124, 92, 255, 0.12);
+  --badge-brand-fg: #ddd6ff;
+  --badge-brand-line: rgba(196, 181, 253, 0.22);
+  --badge-success-bg: rgba(57, 217, 138, 0.12);
+  --badge-success-fg: #bbf7d0;
+  --badge-success-line: rgba(110, 231, 183, 0.22);
+  --badge-warning-bg: rgba(255, 188, 75, 0.13);
+  --badge-warning-fg: #fde68a;
+  --badge-warning-line: rgba(251, 191, 36, 0.22);
+  --badge-danger-bg: rgba(255, 92, 122, 0.13);
+  --badge-danger-fg: #fecdd3;
+  --badge-danger-line: rgba(251, 113, 133, 0.22);
 }
 
 .light {
   color-scheme: light;
-  --background: #f6f7fb;
-  --foreground: #111421;
-  --muted: #5d667a;
+  --background: #f5f2ec;
+  --foreground: #151720;
+  --muted: #646b7b;
+  --muted-strong: #3d4352;
   --panel: rgba(255, 255, 255, 0.78);
-  --panel-strong: rgba(255, 255, 255, 0.94);
-  --line: rgba(17, 20, 33, 0.1);
-  --chart-grid: rgba(17, 20, 33, 0.08);
+  --panel-strong: rgba(255, 255, 255, 0.96);
+  --surface-0: rgba(255, 255, 255, 0.64);
+  --surface-1: rgba(255, 255, 255, 0.82);
+  --surface-2: rgba(245, 241, 232, 0.92);
+  --surface-solid: #ffffff;
+  --shell: rgba(250, 248, 243, 0.86);
+  --overlay: rgba(26, 29, 39, 0.2);
+  --line: rgba(27, 31, 43, 0.11);
+  --line-strong: rgba(27, 31, 43, 0.17);
+  --brand: #5b4bdb;
+  --accent: #087e78;
+  --success: #18794e;
+  --warning: #a16207;
+  --danger: #c2264e;
+  --chart-grid: rgba(27, 31, 43, 0.08);
+  --chart-axis: rgba(27, 31, 43, 0.48);
+  --tooltip-bg: rgba(255, 255, 255, 0.96);
+  --tooltip-fg: #151720;
+  --focus: rgba(91, 75, 219, 0.36);
+  --shadow-card: 0 18px 50px rgba(38, 43, 58, 0.1);
+  --shadow-soft: 0 14px 36px rgba(38, 43, 58, 0.09);
+  --input-bg: rgba(255, 255, 255, 0.74);
+  --input-bg-focus: rgba(255, 255, 255, 0.95);
+  --button-primary-bg: #161922;
+  --button-primary-fg: #ffffff;
+  --button-primary-hover: #282d3a;
+  --button-secondary-bg: rgba(255, 255, 255, 0.72);
+  --button-secondary-hover: rgba(255, 255, 255, 0.98);
+  --badge-brand-bg: rgba(91, 75, 219, 0.1);
+  --badge-brand-fg: #4536ad;
+  --badge-brand-line: rgba(91, 75, 219, 0.16);
+  --badge-success-bg: rgba(24, 121, 78, 0.1);
+  --badge-success-fg: #16643f;
+  --badge-success-line: rgba(24, 121, 78, 0.16);
+  --badge-warning-bg: rgba(161, 98, 7, 0.11);
+  --badge-warning-fg: #835106;
+  --badge-warning-line: rgba(161, 98, 7, 0.18);
+  --badge-danger-bg: rgba(194, 38, 78, 0.1);
+  --badge-danger-fg: #9f1f40;
+  --badge-danger-line: rgba(194, 38, 78, 0.16);
 }
 
 @theme inline {
@@ -54,9 +125,9 @@ body {
 
 .light body {
   background:
-    radial-gradient(circle at 12% 10%, rgba(124, 92, 255, 0.16), transparent 34rem),
-    radial-gradient(circle at 88% 0%, rgba(16, 215, 196, 0.12), transparent 32rem),
-    linear-gradient(135deg, #f6f7fb 0%, #edf2ff 48%, #f7fbff 100%);
+    radial-gradient(circle at 12% 8%, rgba(91, 75, 219, 0.11), transparent 34rem),
+    radial-gradient(circle at 88% 0%, rgba(8, 126, 120, 0.09), transparent 32rem),
+    linear-gradient(135deg, #f6f2ea 0%, #f4f6fb 48%, #eef3f1 100%);
 }
 
 ::selection {
@@ -77,10 +148,84 @@ body {
 }
 
 .glass {
-  background: var(--panel);
+  background: color-mix(in srgb, var(--panel) 88%, var(--surface-solid));
   border: 1px solid var(--line);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.22);
-  backdrop-filter: blur(24px);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(18px);
+}
+
+.light .glass {
+  backdrop-filter: blur(14px);
+}
+
+.text-muted-foreground {
+  color: var(--muted);
+}
+
+.light [class*="border-white\\/10"],
+.light [class*="border-white\\/15"] {
+  border-color: var(--line) !important;
+}
+
+.light [class*="border-white\\/30"] {
+  border-color: var(--line-strong) !important;
+}
+
+.light [class*="bg-white\\/\\[0\\.03\\]"],
+.light [class*="bg-white\\/\\[0\\.035\\]"],
+.light [class*="bg-white\\/\\[0\\.04\\]"],
+.light [class*="bg-white\\/\\[0\\.05\\]"],
+.light [class*="bg-white\\/\\[0\\.055\\]"],
+.light [class*="bg-white\\/\\[0\\.06\\]"],
+.light [class*="bg-white\\/\\[0\\.07\\]"],
+.light [class*="bg-white\\/\\[0\\.08\\]"],
+.light [class*="bg-white\\/\\[0\\.085\\]"],
+.light [class*="bg-white\\/\\[0\\.09\\]"],
+.light [class*="bg-white\\/10"],
+.light [class*="bg-white\\/12"] {
+  background-color: var(--surface-1) !important;
+}
+
+.light [class*="hover:bg-white\\/"]:hover {
+  background-color: var(--surface-2) !important;
+}
+
+.light [class*="bg-black\\/10"],
+.light [class*="bg-black\\/15"],
+.light [class*="bg-black\\/25"],
+.light [class*="bg-black\\/30"] {
+  background-color: rgba(255, 255, 255, 0.68) !important;
+}
+
+.light [class*="bg-black\\/45"],
+.light [class*="bg-black\\/55"],
+.light [class*="bg-black\\/70"] {
+  background-color: rgba(27, 31, 43, 0.18) !important;
+}
+
+.light [class*="text-foreground\\/30"],
+.light [class*="text-foreground\\/35"],
+.light [class*="text-foreground\\/40"],
+.light [class*="text-foreground\\/45"] {
+  color: color-mix(in srgb, var(--foreground) 58%, transparent) !important;
+}
+
+.light [class*="text-foreground\\/50"],
+.light [class*="text-foreground\\/55"],
+.light [class*="text-foreground\\/58"],
+.light [class*="text-foreground\\/60"],
+.light [class*="text-foreground\\/65"] {
+  color: color-mix(in srgb, var(--foreground) 66%, transparent) !important;
+}
+
+.light [class*="text-foreground\\/70"],
+.light [class*="text-foreground\\/72"],
+.light [class*="text-foreground\\/75"] {
+  color: color-mix(in srgb, var(--foreground) 78%, transparent) !important;
+}
+
+.light [class*="placeholder:text-foreground\\/35"]::placeholder {
+  color: color-mix(in srgb, var(--foreground) 48%, transparent) !important;
 }
 
 .text-balance {
@@ -104,5 +249,57 @@ body {
 @keyframes shimmer {
   100% {
     transform: translateX(100%);
+  }
+}
+
+.hero-ambient-a {
+  animation: hero-drift-a 12s ease-in-out infinite alternate;
+}
+
+.hero-ambient-b {
+  animation: hero-drift-b 14s ease-in-out infinite alternate;
+}
+
+@keyframes hero-drift-a {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.72;
+  }
+  to {
+    transform: translate3d(18px, -14px, 0) scale(1.06);
+    opacity: 0.95;
+  }
+}
+
+@keyframes hero-drift-b {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.58;
+  }
+  to {
+    transform: translate3d(-16px, 18px, 0) scale(1.08);
+    opacity: 0.86;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@keyframes tooltip-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }

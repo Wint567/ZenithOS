@@ -1,5 +1,5 @@
 import { wait } from "@/lib/utils";
-import { metrics, notifications, orders, products, users } from "@/mock/data";
+import { invoices, metrics, notifications, orders, paymentMethods, products, users } from "@/mock/data";
 
 export async function fakeLogin(email: string, password: string) {
   await wait(900);
@@ -47,6 +47,21 @@ export async function fetchUsers() {
 export async function fetchProducts() {
   await wait(620);
   return products;
+}
+
+export async function fetchBilling() {
+  await wait(640);
+  return {
+    plan: "Scale",
+    renewal: "June 17, 2026",
+    usage: [
+      { label: "Automation credits", used: 84200, limit: 100000 },
+      { label: "Tracked customers", used: 8610, limit: 12000 },
+      { label: "Team seats", used: 42, limit: 60 },
+    ],
+    invoices,
+    paymentMethods,
+  };
 }
 
 export async function updateSettings() {

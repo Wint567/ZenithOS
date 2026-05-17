@@ -22,10 +22,10 @@ type DataTableProps<T> = {
 
 export function DataTable<T extends Record<string, unknown>>({ data, columns, sortKey, sortDir, onSort, onRowClick }: DataTableProps<T>) {
   return (
-    <div className="overflow-hidden rounded-xl border border-white/10">
+    <div className="overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--surface-0)]">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-white/10 text-sm">
-          <thead className="bg-white/[0.04] text-left text-xs uppercase tracking-[0.08em] text-foreground/45">
+          <thead className="bg-[var(--surface-1)] text-left text-xs uppercase tracking-[0.08em] text-foreground/55">
             <tr>
               {columns.map((column) => (
                 <th key={String(column.key)} className={cn("px-4 py-3 font-semibold", column.className)}>
@@ -47,7 +47,7 @@ export function DataTable<T extends Record<string, unknown>>({ data, columns, so
               <tr
                 key={String(row.id ?? index)}
                 onClick={() => onRowClick?.(row)}
-                className={cn("transition hover:bg-white/[0.04]", onRowClick && "cursor-pointer")}
+                className={cn("transition hover:bg-[var(--surface-1)]", onRowClick && "cursor-pointer")}
               >
                 {columns.map((column) => (
                   <td key={String(column.key)} className={cn("px-4 py-3 text-foreground/75", column.className)}>

@@ -1,8 +1,7 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
-import { CreditCard, Search } from "lucide-react";
-import { fetchOrders } from "@/mock/api";
+import { useMemo, useState } from "react";
+import { CreditCard, Search, ShoppingCart } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import type { Order } from "@/types";
 import { Badge } from "@/shared/ui/badge";
@@ -12,8 +11,12 @@ import { Input } from "@/shared/ui/input";
 import { Modal } from "@/shared/ui/modal";
 import { Select } from "@/shared/ui/select";
 import { DataTable, type Column } from "@/shared/ui/table";
-import { CardSkeleton } from "@/shared/ui/skeleton";
-import { useFakeQuery } from "@/hooks/use-fake-query";
+import { EmptyState } from "@/shared/ui/empty-state";
+import { Timeline } from "@/shared/ui/timeline";
+import { orderTimeline } from "@/mock/data";
+import { useAppStore } from "@/store/use-app-store";
+import { useWorkspaceStore } from "@/store/use-workspace-store";
+import { downloadCsv } from "@/lib/export";
 
 const statusTone: Record<Order["status"], "success" | "warning" | "danger" | "neutral"> = {
   paid: "success",
@@ -23,8 +26,8 @@ const statusTone: Record<Order["status"], "success" | "warning" | "danger" | "ne
 };
 
 export function OrdersView() {
-  const query = useCallback(() => fetchOrders(), []);
-  const { data, loading } = useFakeQuery(query);
+  const pushToast = useAppStore((state) => state.pushToast);
+  const orders = useWorkspaceStore((state) => state.orders);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
   const [sortKey, setSortKey] = useState("date");
@@ -33,7 +36,7 @@ export function OrdersView() {
   const [selected, setSelected] = useState<Order | null>(null);
 
   const filtered = useMemo(() => {
-    const rows = [...(data ?? [])].filter((order) => {
+    const rows = [...orders].filter((order) => {
       const matchesSearch = `${order.id} ${order.customer} ${order.product}`.toLowerCase().includes(search.toLowerCase());
       const matchesStatus = status === "all" || order.status === status;
       return matchesSearch && matchesStatus;
@@ -44,7 +47,7 @@ export function OrdersView() {
       return String(left).localeCompare(String(right), undefined, { numeric: true }) * (sortDir === "asc" ? 1 : -1);
     });
     return rows;
-  }, [data, search, status, sortDir, sortKey]);
+  }, [orders, search, status, sortDir, sortKey]);
 
   const pageSize = 8;
   const pageRows = filtered.slice((page - 1) * pageSize, page * pageSize);
@@ -67,8 +70,6 @@ export function OrdersView() {
     }
   }
 
-  if (loading) return <div className="grid gap-5"><CardSkeleton /><CardSkeleton /><CardSkeleton /></div>;
-
   return (
     <div className="grid gap-5 pb-20 lg:pb-0">
       <section>
@@ -86,12 +87,47 @@ export function OrdersView() {
             <option value="failed">Failed</option>
             <option value="refunded">Refunded</option>
           </Select>
-          <Button variant="secondary"><CreditCard className="size-4" /> Export</Button>
+          <Button variant="secondary" onClick={() => { downloadCsv("zenithos-orders.csv", filtered.map(({ id, customer, product, status, total, date }) => ({ id, customer, product, status, total, date }))); pushToast({ title: "Orders exported", message: "Filtered order data downloaded as CSV.", tone: "brand" }); }}><CreditCard className="size-4" /> Export</Button>
         </div>
         {pageRows.length ? (
-          <DataTable data={pageRows as unknown as Record<string, unknown>[]} columns={columns as unknown as Column<Record<string, unknown>>[]} sortKey={sortKey} sortDir={sortDir} onSort={onSort} onRowClick={(row) => setSelected(row as unknown as Order)} />
+          <>
+            <div className="hidden md:block">
+              <DataTable data={pageRows as unknown as Record<string, unknown>[]} columns={columns as unknown as Column<Record<string, unknown>>[]} sortKey={sortKey} sortDir={sortDir} onSort={onSort} onRowClick={(row) => setSelected(row as unknown as Order)} />
+            </div>
+            <div className="grid gap-3 md:hidden">
+              {pageRows.map((order) => (
+                <button
+                  type="button"
+                  key={order.id}
+                  onClick={() => setSelected(order)}
+                  className="rounded-xl border border-white/10 bg-white/[0.04] p-4 text-left transition active:scale-[0.99]"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-semibold">{order.id}</p>
+                      <p className="mt-1 text-sm text-foreground/45">{order.customer}</p>
+                    </div>
+                    <Badge tone={statusTone[order.status]}>{order.status}</Badge>
+                  </div>
+                  <div className="mt-4 flex items-center justify-between text-sm">
+                    <span className="text-foreground/50">{order.product}</span>
+                    <span className="font-semibold">{formatCurrency(order.total)}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </>
         ) : (
-          <div className="rounded-xl border border-dashed border-white/15 p-12 text-center text-sm text-foreground/45">No orders match the current filters.</div>
+          <EmptyState
+            icon={ShoppingCart}
+            title="No orders found"
+            description="Your filters are hiding every order. Clear the search or change status to inspect the full commerce pipeline."
+            action="Clear filters"
+            onAction={() => {
+              setSearch("");
+              setStatus("all");
+            }}
+          />
         )}
         <div className="mt-5 flex items-center justify-between text-sm text-foreground/55">
           <span>{filtered.length} results</span>
@@ -116,6 +152,10 @@ export function OrdersView() {
               ["Total", formatCurrency(selected.total)],
               ["Date", selected.date],
             ].map(([label, value]) => <div key={label} className="flex justify-between border-b border-white/10 pb-3 text-sm"><span className="text-foreground/45">{label}</span><span>{value}</span></div>)}
+            <div>
+              <h4 className="mb-3 font-semibold">Order timeline</h4>
+              <Timeline events={orderTimeline} />
+            </div>
           </div>
         ) : null}
       </Modal>

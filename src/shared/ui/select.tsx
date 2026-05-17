@@ -15,6 +15,7 @@ export function Select({ label, className, children, ...props }: SelectProps) {
         <select
           className={cn(
             "h-10 w-full appearance-none rounded-lg border border-white/10 bg-white/[0.06] px-3 pr-9 text-sm outline-none transition focus:border-[var(--brand)]/60 focus:ring-4 focus:ring-[var(--brand)]/10",
+            "border-[var(--line)] bg-[var(--input-bg)] text-foreground shadow-sm focus:border-[var(--brand)]/45 focus:bg-[var(--input-bg-focus)] focus:ring-[var(--focus)]/20",
             className,
           )}
           {...props}

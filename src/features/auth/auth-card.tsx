@@ -60,6 +60,7 @@ function strength(password: string) {
 export function AuthCard({ mode }: { mode: Mode }) {
   const router = useRouter();
   const pushToast = useAppStore((state) => state.pushToast);
+  const setSession = useAppStore((state) => state.setSession);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("founder@zenithos.io");
   const [password, setPassword] = useState("Zenith2026!");
@@ -81,6 +82,13 @@ export function AuthCard({ mode }: { mode: Mode }) {
       if (mode === "register") await fakeRegister(name, email, password);
       if (mode === "forgot") await fakeForgotPassword(email);
       if (mode === "reset") await fakeResetPassword(password);
+      if (mode === "login" || mode === "register" || mode === "reset") {
+        setSession({
+          name: mode === "register" && name ? name : "Dara Founder",
+          email,
+          role: "Admin",
+        });
+      }
       pushToast({
         title: mode === "forgot" ? "Reset email sent" : "Welcome to ZenithOS",
         message: mode === "forgot" ? "Check your inbox for the next step." : "Your workspace is ready.",
@@ -92,6 +100,12 @@ export function AuthCard({ mode }: { mode: Mode }) {
     } finally {
       setLoading(false);
     }
+  }
+
+  function continueDemo() {
+    setSession({ name: "Dara Founder", email: "founder@zenithos.io", role: "Admin" });
+    pushToast({ title: "Demo session restored", message: "You are viewing ZenithOS as a workspace admin.", tone: "success" });
+    router.push("/dashboard");
   }
 
   return (
@@ -140,9 +154,12 @@ export function AuthCard({ mode }: { mode: Mode }) {
           </Link>
         </div>
         {mode === "login" ? (
-          <Link href="/forgot-password" className="mt-4 block text-center text-sm text-foreground/45 hover:text-foreground">
-            Forgot password?
-          </Link>
+          <div className="mt-4 grid gap-3">
+            <Button variant="secondary" className="w-full" onClick={continueDemo}>Continue as demo admin</Button>
+            <Link href="/forgot-password" className="block text-center text-sm text-foreground/45 hover:text-foreground">
+              Forgot password?
+            </Link>
+          </div>
         ) : null}
       </Card>
     </motion.div>

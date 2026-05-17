@@ -23,7 +23,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, h
           id={id}
           className={cn(
             "h-11 w-full rounded-lg border border-white/10 bg-white/[0.06] px-3 text-sm text-foreground outline-none transition placeholder:text-foreground/35",
-            "focus:border-[var(--brand)]/60 focus:bg-white/[0.08] focus:ring-4 focus:ring-[var(--brand)]/10",
+            "border-[var(--line)] bg-[var(--input-bg)] shadow-sm focus:border-[var(--brand)]/45 focus:bg-[var(--input-bg-focus)] focus:ring-4 focus:ring-[var(--focus)]/20",
             icon && "pl-10",
             error && "border-red-400/50 focus:border-red-400 focus:ring-red-400/10",
             className,
@@ -32,7 +32,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, h
         />
       </span>
       {error ? (
-        <span className="inline-flex items-center gap-1 text-xs text-red-300">
+        <span className="inline-flex items-center gap-1 text-xs text-[var(--danger)]">
           <AlertCircle className="size-3" />
           {error}
         </span>

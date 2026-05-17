@@ -3,6 +3,7 @@ import "@/app/globals.css";
 import { ThemeProvider } from "@/features/theme/theme-provider";
 import { ToastViewport } from "@/features/notifications/toast-viewport";
 import { CommandPalette } from "@/features/command-palette/command-palette";
+import { RealtimeOrchestrator } from "@/features/realtime/realtime-orchestrator";
 
 export const metadata: Metadata = {
   title: "ZenithOS",
@@ -15,6 +16,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <ThemeProvider>
           {children}
+          <RealtimeOrchestrator />
           <CommandPalette />
           <ToastViewport />
         </ThemeProvider>

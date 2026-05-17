@@ -42,6 +42,8 @@ export type Notification = {
   title: string;
   message: string;
   time: string;
+  category?: "commerce" | "security" | "growth" | "system";
+  timestamp?: number;
   unread: boolean;
   tone: "brand" | "success" | "warning" | "danger";
 };
@@ -52,4 +54,48 @@ export type MetricPoint = {
   customers: number;
   conversion: number;
   orders: number;
+};
+
+export type ActivityEvent = {
+  id: string;
+  title: string;
+  description: string;
+  time: string;
+  tone: "brand" | "success" | "warning" | "danger";
+};
+
+export type Invoice = {
+  id: string;
+  date: string;
+  amount: number;
+  status: "paid" | "open" | "failed";
+};
+
+export type PaymentMethod = {
+  id: string;
+  brand: "Visa" | "Mastercard" | "Amex";
+  last4: string;
+  expires: string;
+};
+
+export type AuditEvent = {
+  id: string;
+  actor: string;
+  action: string;
+  target: string;
+  timestamp: string;
+  severity: "info" | "success" | "warning" | "danger";
+};
+
+export type DashboardWidget = {
+  id: "kpis" | "revenue" | "sales" | "activity" | "onboarding" | "realtime" | "ai";
+  label: string;
+  visible: boolean;
+  size: "sm" | "md" | "lg";
+};
+
+export type AIMessage = {
+  id: string;
+  role: "assistant" | "user";
+  text: string;
 };

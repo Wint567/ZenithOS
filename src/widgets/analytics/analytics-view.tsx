@@ -13,6 +13,59 @@ const channels = [
   { name: "API", value: 12, color: "#f43f5e" },
 ];
 
+type TooltipPayload = {
+  name?: string;
+  value?: number | string;
+  color?: string;
+  dataKey?: string;
+};
+
+function ChartTooltip({
+  active,
+  payload,
+  label,
+  valueFormatter,
+}: {
+  active?: boolean;
+  payload?: TooltipPayload[];
+  label?: string;
+  valueFormatter?: (value: number | string, item: TooltipPayload) => string;
+}) {
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div className="animate-[tooltip-in_140ms_ease-out] rounded-xl border border-[var(--line)] bg-[var(--tooltip-bg)] px-4 py-3 text-[var(--tooltip-fg)] shadow-[var(--shadow-soft)] backdrop-blur-xl">
+      {label ? <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.14em] opacity-55">{label}</p> : null}
+      <div className="grid gap-2">
+        {payload.map((item) => (
+          <div key={`${item.name}-${item.dataKey}`} className="flex min-w-36 items-center justify-between gap-5 text-sm">
+            <span className="flex items-center gap-2 opacity-75">
+              <span className="size-2 rounded-full shadow-[0_0_14px_currentColor]" style={{ background: item.color, color: item.color }} />
+              {item.name}
+            </span>
+            <span className="font-semibold">{valueFormatter ? valueFormatter(item.value ?? "", item) : item.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PieTooltip({ active, payload }: { active?: boolean; payload?: TooltipPayload[] }) {
+  if (!active || !payload?.length) return null;
+  const item = payload[0];
+  return (
+    <div className="animate-[tooltip-in_140ms_ease-out] rounded-xl border border-[var(--line)] bg-[var(--tooltip-bg)] px-4 py-3 text-[var(--tooltip-fg)] shadow-[var(--shadow-soft)] backdrop-blur-xl">
+      <div className="flex items-center gap-2">
+        <span className="size-2.5 rounded-full shadow-[0_0_16px_currentColor]" style={{ background: item.color, color: item.color }} />
+        <p className="text-sm font-medium">{item.name}</p>
+      </div>
+      <p className="mt-2 text-2xl font-semibold tracking-tight">{item.value}%</p>
+      <p className="mt-1 text-xs opacity-55">Share of qualified acquisition</p>
+    </div>
+  );
+}
+
 export function AnalyticsView() {
   return (
     <div className="grid gap-5 pb-20 lg:pb-0">
@@ -42,32 +95,64 @@ export function AnalyticsView() {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={metrics}>
                 <CartesianGrid stroke="var(--chart-grid)" vertical={false} />
-                <XAxis dataKey="name" stroke="rgba(255,255,255,.35)" axisLine={false} tickLine={false} />
-                <YAxis stroke="rgba(255,255,255,.35)" axisLine={false} tickLine={false} tickFormatter={formatCompact} />
-                <Tooltip contentStyle={{ background: "rgba(10,12,20,.92)", border: "1px solid rgba(255,255,255,.1)", borderRadius: 12 }} />
+                <XAxis dataKey="name" stroke="var(--chart-axis)" axisLine={false} tickLine={false} />
+                <YAxis stroke="var(--chart-axis)" axisLine={false} tickLine={false} tickFormatter={formatCompact} />
+                <Tooltip
+                  content={<ChartTooltip valueFormatter={(value, item) => item.dataKey === "customers" ? formatCompact(Number(value)) : String(value)} />}
+                  cursor={{ stroke: "var(--line-strong)", strokeWidth: 1 }}
+                />
                 <Line type="monotone" dataKey="customers" stroke="#10d7c4" strokeWidth={3} dot={false} />
                 <Line type="monotone" dataKey="orders" stroke="#7c5cff" strokeWidth={3} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </Card>
-        <Card>
-          <h2 className="font-semibold">Acquisition mix</h2>
-          <div className="mt-4 h-72">
+        <Card className="relative overflow-hidden">
+          <div className="pointer-events-none absolute inset-x-8 top-16 h-32 rounded-full bg-[var(--brand)]/10 blur-3xl" />
+          <div className="relative flex items-start justify-between gap-4">
+            <div>
+              <h2 className="font-semibold">Acquisition mix</h2>
+              <p className="mt-1 text-sm text-foreground/45">Qualified pipeline by source</p>
+            </div>
+            <Badge tone="brand">Live</Badge>
+          </div>
+          <div className="relative mt-4 h-72">
+            <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 text-center">
+              <p className="text-[11px] uppercase tracking-[0.14em] text-foreground/35">Top source</p>
+              <p className="mt-1 text-2xl font-semibold">Direct</p>
+              <p className="mt-1 text-xs text-emerald-300">42%</p>
+            </div>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={channels} innerRadius={68} outerRadius={105} paddingAngle={4} dataKey="value">
-                  {channels.map((entry) => <Cell key={entry.name} fill={entry.color} />)}
+                <Pie
+                  data={channels}
+                  innerRadius={76}
+                  outerRadius={108}
+                  paddingAngle={5}
+                  cornerRadius={8}
+                  dataKey="value"
+                  stroke="var(--surface-solid)"
+                  strokeWidth={2}
+                  isAnimationActive
+                  animationDuration={850}
+                >
+                  {channels.map((entry) => (
+                    <Cell
+                      key={entry.name}
+                      fill={entry.color}
+                      className="outline-none transition-opacity duration-200 hover:opacity-90"
+                    />
+                  ))}
                 </Pie>
-                <Tooltip contentStyle={{ background: "rgba(10,12,20,.92)", border: "1px solid rgba(255,255,255,.1)", borderRadius: 12 }} />
+                <Tooltip content={<PieTooltip />} wrapperStyle={{ outline: "none", zIndex: 30 }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="grid gap-2">
+          <div className="relative grid gap-2">
             {channels.map((channel) => (
-              <div key={channel.name} className="flex items-center justify-between text-sm">
-                <span className="flex items-center gap-2"><span className="size-2 rounded-full" style={{ background: channel.color }} />{channel.name}</span>
-                <span className="text-foreground/55">{channel.value}%</span>
+              <div key={channel.name} className="flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2 text-sm">
+                <span className="flex items-center gap-2 text-foreground/72"><span className="size-2 rounded-full shadow-[0_0_12px_currentColor]" style={{ background: channel.color, color: channel.color }} />{channel.name}</span>
+                <span className="font-medium text-foreground/75">{channel.value}%</span>
               </div>
             ))}
           </div>
@@ -85,9 +170,12 @@ export function AnalyticsView() {
                 </linearGradient>
               </defs>
               <CartesianGrid stroke="var(--chart-grid)" vertical={false} />
-              <XAxis dataKey="name" stroke="rgba(255,255,255,.35)" axisLine={false} tickLine={false} />
-              <YAxis stroke="rgba(255,255,255,.35)" axisLine={false} tickLine={false} tickFormatter={(value) => `${value}%`} />
-              <Tooltip contentStyle={{ background: "rgba(10,12,20,.92)", border: "1px solid rgba(255,255,255,.1)", borderRadius: 12 }} formatter={(value, name) => name === "revenue" ? formatCurrency(Number(value)) : `${value}%`} />
+              <XAxis dataKey="name" stroke="var(--chart-axis)" axisLine={false} tickLine={false} />
+              <YAxis stroke="var(--chart-axis)" axisLine={false} tickLine={false} tickFormatter={(value) => `${value}%`} />
+              <Tooltip
+                content={<ChartTooltip valueFormatter={(value, item) => item.dataKey === "revenue" ? formatCurrency(Number(value)) : `${value}%`} />}
+                cursor={{ stroke: "rgba(16,215,196,.22)", strokeWidth: 1 }}
+              />
               <Area type="monotone" dataKey="conversion" stroke="#10d7c4" strokeWidth={3} fill="url(#conversion)" />
             </AreaChart>
           </ResponsiveContainer>

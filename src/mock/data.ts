@@ -1,4 +1,4 @@
-import type { MetricPoint, Notification, Order, Product, User } from "@/types";
+import type { ActivityEvent, Invoice, MetricPoint, Notification, Order, PaymentMethod, Product, User } from "@/types";
 
 export const metrics: MetricPoint[] = [
   { name: "Jan", revenue: 42000, customers: 2100, conversion: 4.1, orders: 840 },
@@ -19,12 +19,12 @@ export const orders: Order[] = Array.from({ length: 36 }, (_, index) => {
   const statuses: Order["status"][] = ["paid", "pending", "failed", "refunded"];
   const channels: Order["channel"][] = ["Website", "Marketplace", "Partner", "API"];
   const products = ["Zenith Core", "Pulse AI", "Orbit Teams", "Nova Insights", "Atlas Billing"];
-  const names = ["Mara Chen", "Theo Brooks", "Ava Patel", "Nico Reyes", "Iris Stone", "Daria Volkov"];
+  const names = ["Mara Chen", "Theo Brooks", "Ava Patel", "Nico Reyes", "Iris Stone", "Daria Volkov", "Samira Okafor", "Luca Moretti", "Kei Tanaka"];
   const name = names[index % names.length];
   return {
     id: `ZN-${8490 + index}`,
     customer: name,
-    email: `${name.toLowerCase().replace(" ", ".")}@example.com`,
+    email: `${name.toLowerCase().replace(" ", ".")}@northstarhq.com`,
     product: products[index % products.length],
     status: statuses[index % statuses.length],
     total: 240 + index * 57,
@@ -166,6 +166,8 @@ export const notifications: Notification[] = [
     title: "Revenue milestone",
     message: "MRR crossed $168K with 12.4% month-over-month growth.",
     time: "Now",
+    category: "growth",
+    timestamp: 1778985600000,
     unread: true,
     tone: "success",
   },
@@ -174,6 +176,8 @@ export const notifications: Notification[] = [
     title: "Inventory watch",
     message: "Pulse AI has 42 seats left before the next procurement sync.",
     time: "7 min",
+    category: "commerce",
+    timestamp: 1778985180000,
     unread: true,
     tone: "warning",
   },
@@ -182,9 +186,37 @@ export const notifications: Notification[] = [
     title: "Security review",
     message: "One admin account requires SSO verification.",
     time: "21 min",
+    category: "security",
+    timestamp: 1778984340000,
     unread: false,
     tone: "danger",
   },
+];
+
+export const orderTimeline: ActivityEvent[] = [
+  { id: "evt_o1", title: "Payment completed", description: "Stripe confirmed settlement and tax calculation.", time: "2 min ago", tone: "success" },
+  { id: "evt_o2", title: "Order routed", description: "Assigned to enterprise fulfillment queue.", time: "9 min ago", tone: "brand" },
+  { id: "evt_o3", title: "Invoice generated", description: "Invoice and receipt sent to finance contact.", time: "14 min ago", tone: "brand" },
+  { id: "evt_o4", title: "Risk check passed", description: "No fraud signals detected for this transaction.", time: "18 min ago", tone: "success" },
+];
+
+export const userTimeline: ActivityEvent[] = [
+  { id: "evt_u1", title: "Login detected", description: "Successful SSO login from a trusted device.", time: "4 min ago", tone: "success" },
+  { id: "evt_u2", title: "Role reviewed", description: "Access permissions were checked by workspace policy.", time: "36 min ago", tone: "brand" },
+  { id: "evt_u3", title: "Password changed", description: "User completed a scheduled security rotation.", time: "2 days ago", tone: "warning" },
+  { id: "evt_u4", title: "Account created", description: "User joined through an admin invitation.", time: "12 days ago", tone: "brand" },
+];
+
+export const invoices: Invoice[] = [
+  { id: "INV-2026-0517", date: "2026-05-17", amount: 12840, status: "paid" },
+  { id: "INV-2026-0417", date: "2026-04-17", amount: 11980, status: "paid" },
+  { id: "INV-2026-0317", date: "2026-03-17", amount: 10820, status: "paid" },
+  { id: "INV-2026-0217", date: "2026-02-17", amount: 9820, status: "open" },
+];
+
+export const paymentMethods: PaymentMethod[] = [
+  { id: "pm_01", brand: "Visa", last4: "4242", expires: "08/29" },
+  { id: "pm_02", brand: "Amex", last4: "1005", expires: "11/28" },
 ];
 
 export const activity = [
