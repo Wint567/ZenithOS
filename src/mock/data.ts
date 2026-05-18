@@ -1,4 +1,4 @@
-import type { ActivityEvent, Invoice, MetricPoint, Notification, Order, PaymentMethod, Product, User } from "@/types";
+import type { ActivityEvent, Integration, Invoice, MetricPoint, Notification, Order, PaymentMethod, Product, User } from "@/types";
 
 export const metrics: MetricPoint[] = [
   { name: "Jan", revenue: 42000, customers: 2100, conversion: 4.1, orders: 840 },
@@ -217,6 +217,93 @@ export const invoices: Invoice[] = [
 export const paymentMethods: PaymentMethod[] = [
   { id: "pm_01", brand: "Visa", last4: "4242", expires: "08/29" },
   { id: "pm_02", brand: "Amex", last4: "1005", expires: "11/28" },
+];
+
+export const integrations: Integration[] = [
+  {
+    id: "slack",
+    name: "Slack",
+    category: "Communication",
+    description: "Route billing alerts, high-value orders, and workspace approvals into a channel.",
+    connected: true,
+    status: "connected",
+    lastSync: "May 18, 09:24 AM",
+    permissions: ["Post channel alerts", "Read workspace channels", "Create incident threads"],
+    logs: [
+      { id: "int_slack_01", timestamp: "May 18, 09:24 AM", message: "Posted revenue milestone to #growth-ops.", severity: "success" },
+      { id: "int_slack_02", timestamp: "May 17, 04:18 PM", message: "Synced channel directory.", severity: "info" },
+    ],
+  },
+  {
+    id: "github",
+    name: "GitHub",
+    category: "Developer",
+    description: "Connect release events, deployment notes, and incident reviews to product activity.",
+    connected: false,
+    status: "available",
+    lastSync: "Not connected",
+    permissions: ["Read repositories", "Read deployment status", "Create release notes"],
+    logs: [],
+  },
+  {
+    id: "stripe",
+    name: "Stripe",
+    category: "Finance",
+    description: "Mirror invoice status, subscription movement, and payment exceptions into ZenithOS.",
+    connected: true,
+    status: "connected",
+    lastSync: "May 18, 08:58 AM",
+    permissions: ["Read invoices", "Read subscriptions", "Export payment events"],
+    logs: [
+      { id: "int_stripe_01", timestamp: "May 18, 08:58 AM", message: "Imported 4 invoice records and 12 payment events.", severity: "success" },
+    ],
+  },
+  {
+    id: "discord",
+    name: "Discord",
+    category: "Communication",
+    description: "Broadcast lifecycle events to customer community and internal operator channels.",
+    connected: false,
+    status: "available",
+    lastSync: "Not connected",
+    permissions: ["Read servers", "Post channel messages", "Create webhook alerts"],
+    logs: [],
+  },
+  {
+    id: "notion",
+    name: "Notion",
+    category: "Knowledge",
+    description: "Publish weekly analytics snapshots and onboarding summaries to shared team docs.",
+    connected: false,
+    status: "available",
+    lastSync: "Not connected",
+    permissions: ["Read selected pages", "Create database items", "Update analytics pages"],
+    logs: [],
+  },
+  {
+    id: "linear",
+    name: "Linear",
+    category: "Developer",
+    description: "Turn operational anomalies into triaged issues with linked customer and invoice context.",
+    connected: true,
+    status: "connected",
+    lastSync: "May 17, 06:40 PM",
+    permissions: ["Read teams", "Create issues", "Link issue metadata"],
+    logs: [
+      { id: "int_linear_01", timestamp: "May 17, 06:40 PM", message: "Created issue OPS-218 for failed SSO review.", severity: "warning" },
+    ],
+  },
+  {
+    id: "zapier",
+    name: "Zapier",
+    category: "Automation",
+    description: "Trigger lightweight workflows when orders close, users are invited, or invoices change.",
+    connected: false,
+    status: "available",
+    lastSync: "Not connected",
+    permissions: ["Read trigger events", "Execute selected automations", "Write sync logs"],
+    logs: [],
+  },
 ];
 
 export const activity = [

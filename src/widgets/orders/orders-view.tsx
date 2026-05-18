@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { CreditCard, Search, ShoppingCart } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import type { Order } from "@/types";
@@ -10,7 +11,7 @@ import { Card } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Modal } from "@/shared/ui/modal";
 import { Select } from "@/shared/ui/select";
-import { DataTable, type Column } from "@/shared/ui/table";
+import { EnterpriseTable, type BulkAction, type EnterpriseColumn } from "@/shared/ui/enterprise-table";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { Timeline } from "@/shared/ui/timeline";
 import { orderTimeline } from "@/mock/data";
@@ -26,12 +27,13 @@ const statusTone: Record<Order["status"], "success" | "warning" | "danger" | "ne
 };
 
 export function OrdersView() {
+  const router = useRouter();
   const pushToast = useAppStore((state) => state.pushToast);
   const orders = useWorkspaceStore((state) => state.orders);
+  const updateOrderStatus = useWorkspaceStore((state) => state.updateOrderStatus);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
-  const [sortKey, setSortKey] = useState("date");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const sortKey = "date";
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Order | null>(null);
 
@@ -44,31 +46,42 @@ export function OrdersView() {
     rows.sort((a, b) => {
       const left = a[sortKey as keyof Order];
       const right = b[sortKey as keyof Order];
-      return String(left).localeCompare(String(right), undefined, { numeric: true }) * (sortDir === "asc" ? 1 : -1);
+      return String(left).localeCompare(String(right), undefined, { numeric: true }) * -1;
     });
     return rows;
-  }, [orders, search, status, sortDir, sortKey]);
+  }, [orders, search, status, sortKey]);
 
   const pageSize = 8;
   const pageRows = filtered.slice((page - 1) * pageSize, page * pageSize);
   const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
 
-  const columns: Column<Order>[] = [
-    { key: "id", header: "Order", sortable: true, render: (row) => <span className="font-medium text-foreground">{row.id}</span> },
-    { key: "customer", header: "Customer", sortable: true, render: (row) => <div><p className="font-medium text-foreground">{row.customer}</p><p className="text-xs text-foreground/40">{row.email}</p></div> },
-    { key: "product", header: "Product", sortable: true },
-    { key: "status", header: "Status", render: (row) => <Badge tone={statusTone[row.status]}>{row.status}</Badge> },
-    { key: "total", header: "Total", sortable: true, render: (row) => formatCurrency(row.total) },
-    { key: "date", header: "Date", sortable: true },
+  const columns: EnterpriseColumn<Order>[] = [
+    { id: "id", header: "Order", sortable: true, accessor: (row) => row.id, render: (row) => <span className="font-medium text-foreground">{row.id}</span>, hideable: false },
+    { id: "customer", header: "Customer", sortable: true, accessor: (row) => row.customer, render: (row) => <div><p className="font-medium text-foreground">{row.customer}</p><p className="text-xs text-foreground/40">{row.email}</p></div> },
+    { id: "product", header: "Product", sortable: true, accessor: (row) => row.product },
+    { id: "status", header: "Status", sortable: true, accessor: (row) => row.status, render: (row) => <Badge tone={statusTone[row.status]}>{row.status}</Badge> },
+    { id: "total", header: "Total", sortable: true, accessor: (row) => row.total, render: (row) => formatCurrency(row.total) },
+    { id: "date", header: "Date", sortable: true, accessor: (row) => row.date },
   ];
 
-  function onSort(key: string) {
-    if (sortKey === key) setSortDir((dir) => (dir === "asc" ? "desc" : "asc"));
-    else {
-      setSortKey(key);
-      setSortDir("asc");
-    }
-  }
+  const bulkActions: BulkAction<Order>[] = [
+    {
+      id: "paid",
+      label: "Mark as paid",
+      action: (rows) => {
+        updateOrderStatus(rows.map((row) => row.id), "paid");
+        pushToast({ title: "Orders updated", message: `${rows.length} selected order${rows.length === 1 ? "" : "s"} marked paid.`, tone: "success" });
+      },
+    },
+    {
+      id: "pending",
+      label: "Move to pending review",
+      action: (rows) => {
+        updateOrderStatus(rows.map((row) => row.id), "pending");
+        pushToast({ title: "Orders updated", message: `${rows.length} selected order${rows.length === 1 ? "" : "s"} moved to pending.`, tone: "warning" });
+      },
+    },
+  ];
 
   return (
     <div className="grid gap-5 pb-20 lg:pb-0">
@@ -91,31 +104,30 @@ export function OrdersView() {
         </div>
         {pageRows.length ? (
           <>
-            <div className="hidden md:block">
-              <DataTable data={pageRows as unknown as Record<string, unknown>[]} columns={columns as unknown as Column<Record<string, unknown>>[]} sortKey={sortKey} sortDir={sortDir} onSort={onSort} onRowClick={(row) => setSelected(row as unknown as Order)} />
-            </div>
-            <div className="grid gap-3 md:hidden">
-              {pageRows.map((order) => (
-                <button
-                  type="button"
-                  key={order.id}
-                  onClick={() => setSelected(order)}
-                  className="rounded-xl border border-white/10 bg-white/[0.04] p-4 text-left transition active:scale-[0.99]"
-                >
+            <EnterpriseTable
+              tableId="orders"
+              rows={pageRows}
+              columns={columns}
+              getRowId={(order) => order.id}
+              onRowOpen={(order) => router.push(`/orders/${order.id}`)}
+              bulkActions={bulkActions}
+              mobileCard={(order, selectedRow, toggle) => (
+                <div className="grid gap-3">
                   <div className="flex items-start justify-between gap-3">
-                    <div>
+                    <button type="button" onClick={() => router.push(`/orders/${order.id}`)} className="text-left">
                       <p className="font-semibold">{order.id}</p>
                       <p className="mt-1 text-sm text-foreground/45">{order.customer}</p>
-                    </div>
+                    </button>
                     <Badge tone={statusTone[order.status]}>{order.status}</Badge>
                   </div>
-                  <div className="mt-4 flex items-center justify-between text-sm">
+                  <div className="flex items-center justify-between text-sm">
                     <span className="text-foreground/50">{order.product}</span>
                     <span className="font-semibold">{formatCurrency(order.total)}</span>
                   </div>
-                </button>
-              ))}
-            </div>
+                  <button type="button" onClick={toggle} className="text-left text-xs text-[var(--muted)]">{selectedRow ? "Selected for bulk actions" : "Select order"}</button>
+                </div>
+              )}
+            />
           </>
         ) : (
           <EmptyState

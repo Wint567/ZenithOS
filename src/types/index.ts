@@ -85,6 +85,8 @@ export type AuditEvent = {
   target: string;
   timestamp: string;
   severity: "info" | "success" | "warning" | "danger";
+  entityType?: "order" | "user" | "product" | "invoice" | "workspace" | "integration" | "system";
+  entityId?: string;
 };
 
 export type DashboardWidget = {
@@ -98,4 +100,35 @@ export type AIMessage = {
   id: string;
   role: "assistant" | "user";
   text: string;
+};
+
+export type IntegrationId = "slack" | "github" | "stripe" | "discord" | "notion" | "linear" | "zapier";
+
+export type IntegrationLog = {
+  id: string;
+  timestamp: string;
+  message: string;
+  severity: "info" | "success" | "warning" | "danger";
+};
+
+export type Integration = {
+  id: IntegrationId;
+  name: string;
+  category: "Communication" | "Developer" | "Finance" | "Knowledge" | "Automation";
+  description: string;
+  connected: boolean;
+  status: "available" | "connected" | "syncing" | "error";
+  lastSync: string;
+  permissions: string[];
+  logs: IntegrationLog[];
+};
+
+export type TableDensity = "compact" | "comfortable" | "spacious";
+
+export type TablePreferences = {
+  visibleColumns: string[];
+  sortKey?: string;
+  sortDir?: "asc" | "desc";
+  density: TableDensity;
+  savedFilter?: string;
 };

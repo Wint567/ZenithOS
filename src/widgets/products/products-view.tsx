@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Pencil, Plus, Star } from "lucide-react";
 import type { Product } from "@/types";
@@ -130,9 +131,14 @@ export function ProductsView() {
               ].map(([label, value]) => <div key={label} className="rounded-lg border border-white/10 bg-white/[0.05] p-3"><p className="text-xs text-foreground/40">{label}</p><p className="mt-1 font-semibold">{value}</p></div>)}
             </div>
             <div className="mt-5 flex items-center gap-1 text-amber-300"><Star className="size-4 fill-current" /> Premium customer satisfaction signal</div>
-            <Button className="mt-5" variant="secondary" onClick={() => { setSelected(null); openEditor(selected); }}>
-              <Pencil className="size-4" /> Edit product
-            </Button>
+            <div className="mt-5 flex flex-wrap gap-2">
+              <Button variant="secondary" onClick={() => { setSelected(null); openEditor(selected); }}>
+                <Pencil className="size-4" /> Edit product
+              </Button>
+              <Button asChild variant="ghost">
+                <Link href={`/products/${selected.id}`}>Open full record</Link>
+              </Button>
+            </div>
           </div>
         ) : null}
       </Modal>

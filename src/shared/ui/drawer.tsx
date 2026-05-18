@@ -27,6 +27,20 @@ export function Drawer({ open, title, onClose, children }: DrawerProps) {
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") onClose();
+      if (event.key !== "Tab" || !panel) return;
+      const nodes = Array.from(
+        panel.querySelectorAll<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'),
+      ).filter((node) => !node.hasAttribute("disabled"));
+      if (!nodes.length) return;
+      const first = nodes[0];
+      const last = nodes[nodes.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
 
     document.addEventListener("keydown", onKeyDown);
@@ -41,7 +55,7 @@ export function Drawer({ open, title, onClose, children }: DrawerProps) {
   return (
     <AnimatePresence>
       {open ? (
-        <motion.div className="fixed inset-0 z-50 bg-[var(--overlay)] backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+        <motion.div className="fixed inset-0 z-50 bg-[var(--overlay)] backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={onClose}>
           <motion.aside
             ref={panelRef}
             role="dialog"
@@ -52,6 +66,7 @@ export function Drawer({ open, title, onClose, children }: DrawerProps) {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 260 }}
+            onMouseDown={(event) => event.stopPropagation()}
           >
             <div className="mb-5 flex items-center justify-between">
               <h2 id={titleId} className="text-lg font-semibold">{title}</h2>

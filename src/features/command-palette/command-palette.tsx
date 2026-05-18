@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { BarChart3, Boxes, Command, CreditCard, LayoutDashboard, Moon, Search, Settings, ShoppingCart, Sun, Users, X, Zap } from "lucide-react";
+import { BarChart3, Boxes, Command, CreditCard, FileClock, Layers3, LayoutDashboard, Moon, PlugZap, Search, Settings, ShoppingCart, Sun, Users, X, Zap } from "lucide-react";
 import { useAppStore } from "@/store/use-app-store";
 import { useWorkspaceStore } from "@/store/use-workspace-store";
 import { Button } from "@/shared/ui/button";
@@ -41,6 +41,8 @@ export function CommandPalette() {
   const pushToast = useAppStore((state) => state.pushToast);
   const orders = useWorkspaceStore((state) => state.orders);
   const users = useWorkspaceStore((state) => state.users);
+  const integrations = useWorkspaceStore((state) => state.integrations);
+  const syncIntegration = useWorkspaceStore((state) => state.syncIntegration);
   const simulateOperationalEvent = useWorkspaceStore((state) => state.simulateOperationalEvent);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
@@ -56,11 +58,26 @@ export function CommandPalette() {
       { id: "users", label: "Go to Users", description: "Team access, roles, and activity", group: "Navigation", icon: Users, shortcut: "G U", action: () => navigate("/users") },
       { id: "products", label: "Go to Products", description: "Catalog and inventory tracking", group: "Navigation", icon: Boxes, shortcut: "G P", action: () => navigate("/products") },
       { id: "analytics", label: "Go to Analytics", description: "Revenue and customer intelligence", group: "Navigation", icon: BarChart3, shortcut: "G A", action: () => navigate("/analytics") },
+      { id: "audit", label: "Go to Audit Logs", description: "Compliance-grade event history", group: "Navigation", icon: FileClock, shortcut: "G L", action: () => navigate("/audit") },
+      { id: "integrations", label: "Go to Integrations", description: "Connected tools, permissions, and sync logs", group: "Navigation", icon: PlugZap, shortcut: "G I", action: () => navigate("/integrations") },
       { id: "billing", label: "Go to Billing", description: "Plan, invoices, and payment methods", group: "Navigation", icon: CreditCard, shortcut: "G B", action: () => navigate("/billing") },
       { id: "settings", label: "Go to Settings", description: "Workspace configuration", group: "Navigation", icon: Settings, shortcut: "G S", action: () => navigate("/settings") },
+      { id: "design-system", label: "Open Design System", description: "Tokens, primitives, accessibility, and component states", group: "Navigation", icon: Layers3, shortcut: "G Y", action: () => navigate("/design-system") },
       { id: "theme", label: `Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`, description: "Toggle global appearance", group: "Quick actions", icon: theme === "dark" ? Sun : Moon, action: toggleTheme },
       { id: "realtime", label: "Simulate Realtime Event", description: "Create a paid order, notification, audit entry, and AI insight", group: "Quick actions", icon: Zap, action: () => { const notification = simulateOperationalEvent(); pushToast({ title: notification.title, message: notification.message, tone: notification.tone }); } },
       { id: "export-orders", label: "Export Orders", description: "Download the current order book as CSV", group: "Quick actions", icon: CreditCard, action: () => { downloadCsv("zenithos-orders.csv", orders.map(({ id, customer, product, status, total, date }) => ({ id, customer, product, status, total, date }))); pushToast({ title: "Orders exported", message: "CSV generated from persisted workspace state.", tone: "brand" }); } },
+      ...integrations.filter((integration) => integration.connected).map((integration) => ({
+        id: `sync-${integration.id}`,
+        label: `Sync ${integration.name}`,
+        description: `${integration.category} integration · ${integration.lastSync}`,
+        group: "Integrations",
+        icon: PlugZap,
+        action: () => {
+          syncIntegration(integration.id);
+          pushToast({ title: `${integration.name} synced`, message: "Manual sync completed from command palette.", tone: "brand" });
+          setOpen(false);
+        },
+      })),
       ...orders.slice(0, 8).map((order) => ({
         id: order.id,
         label: order.id,
@@ -78,7 +95,7 @@ export function CommandPalette() {
         action: () => navigate("/users"),
       })),
     ];
-  }, [orders, pushToast, router, setOpen, simulateOperationalEvent, theme, toggleTheme, users]);
+  }, [integrations, orders, pushToast, router, setOpen, simulateOperationalEvent, syncIntegration, theme, toggleTheme, users]);
 
   const filtered = useMemo(
     () =>
@@ -132,6 +149,9 @@ export function CommandPalette() {
       {open ? (
         <motion.div className="fixed inset-0 z-[70] bg-[var(--overlay)] p-4 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Command palette"
             className="glass mx-auto mt-[8vh] w-full max-w-3xl overflow-hidden rounded-xl"
             initial={{ opacity: 0, y: 18, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}

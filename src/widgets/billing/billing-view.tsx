@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Check, CreditCard, Download, Gem, ReceiptText, Sparkles } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { Badge } from "@/shared/ui/badge";
@@ -81,12 +82,12 @@ export function BillingView() {
           </div>
           <div className="grid gap-3">
             {invoices.map((invoice) => (
-              <div key={invoice.id} className="grid gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-4 sm:grid-cols-[auto_1fr_auto_auto] sm:items-center">
+              <Link key={invoice.id} href={`/billing/invoices/${invoice.id}`} className="grid gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-4 transition hover:bg-[var(--surface-2)] sm:grid-cols-[auto_1fr_auto_auto] sm:items-center">
                 <ReceiptText className="size-5 text-foreground/45" />
                 <div><p className="font-medium">{invoice.id}</p><p className="text-sm text-foreground/45">{invoice.date}</p></div>
                 <p className="font-semibold">{formatCurrency(invoice.amount)}</p>
                 <Badge tone={invoice.status === "paid" ? "success" : invoice.status === "open" ? "warning" : "danger"}>{invoice.status}</Badge>
-              </div>
+              </Link>
             ))}
           </div>
         </Card>

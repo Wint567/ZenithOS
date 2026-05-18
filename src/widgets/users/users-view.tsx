@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Clock, MapPin, Search, UserPlus } from "lucide-react";
 import type { User } from "@/types";
 import { Badge } from "@/shared/ui/badge";
@@ -104,6 +105,9 @@ export function UsersView() {
                 <option>Analyst</option>
               </Select>
             </div>
+            <Button asChild className="mt-4" variant="secondary">
+              <Link href={`/users/${selected.id}`}>Open full user record</Link>
+            </Button>
             <h4 className="mt-7 font-semibold">Activity history</h4>
             <div className="mt-3 grid gap-3">
               {selected.activity.map((item) => <div key={item} className="rounded-lg border border-white/10 bg-white/[0.04] p-3 text-sm text-foreground/70">{item}</div>)}

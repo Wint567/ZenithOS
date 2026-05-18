@@ -10,10 +10,13 @@ import {
   ChevronDown,
   ChevronRight,
   CreditCard,
+  FileClock,
+  Layers3,
   LayoutDashboard,
   Menu,
   Moon,
   PanelLeftClose,
+  PlugZap,
   Search,
   Settings,
   ShoppingCart,
@@ -44,13 +47,16 @@ const navGroups = [
       { label: "Orders", href: "/orders", icon: ShoppingCart, shortcut: "G O" },
       { label: "Users", href: "/users", icon: Users, shortcut: "G U" },
       { label: "Products", href: "/products", icon: Boxes, shortcut: "G P" },
+      { label: "Audit Logs", href: "/audit", icon: FileClock, shortcut: "G L" },
     ],
   },
   {
     label: "Workspace",
     items: [
+      { label: "Integrations", href: "/integrations", icon: PlugZap, shortcut: "G I" },
       { label: "Billing", href: "/billing", icon: CreditCard, shortcut: "G B" },
       { label: "Settings", href: "/settings", icon: Settings, shortcut: "G S" },
+      { label: "Design System", href: "/design-system", icon: Layers3, shortcut: "G Y" },
     ],
   },
 ];
@@ -90,7 +96,7 @@ export function AppShell({ children }: React.PropsWithChildren) {
         return;
       }
       if (pendingG) {
-        const routes: Record<string, string> = { d: "/dashboard", o: "/orders", u: "/users", p: "/products", a: "/analytics", b: "/billing", s: "/settings" };
+        const routes: Record<string, string> = { d: "/dashboard", o: "/orders", u: "/users", p: "/products", a: "/analytics", b: "/billing", s: "/settings", l: "/audit", i: "/integrations", y: "/design-system" };
         const href = routes[event.key.toLowerCase()];
         if (href) {
           event.preventDefault();
